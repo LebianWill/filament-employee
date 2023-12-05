@@ -8,4 +8,33 @@ use Illuminate\Database\Eloquent\Model;
 class Employee extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'first_name',
+        'last_name',
+        'address',
+        'department_id',
+        'city_id',
+        'state_id',
+        'country_id',
+        'zip_code',
+        'birth_date',
+        'hired_date'
+    ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+    public function state()
+    {
+        return $this->belongsTo(State::class);
+    }
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 }
