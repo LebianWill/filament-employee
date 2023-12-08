@@ -37,15 +37,29 @@ class EmployeeResource extends Resource
                     Select::make('country_id')
                         ->required()
                         ->label('Country')
-                        ->options(Country::all()->pluck('name', 'id')),
+                        ->options(Country::all()->pluck('name', 'id')->toArray())
+                        ->reactive()
+                        ->afterStateUpdated(fn (callable $set) => $set('state_id', null)),
                     Select::make('state_id')
                         ->required()
                         ->label('State')
-                        ->options(State::all()->pluck('name', 'id')),
+                        ->options(function (callable $get) {
+                            $country = Country::find($get('country_id'));
+                            if (!$country) {
+                                return State::all()->pluck('name', 'id');
+                            }
+                            return $country->states->pluck('name', 'id');
+                        })->reactive(),
                     Select::make('city_id')
                         ->required()
                         ->label('City')
-                        ->options(City::all()->pluck('name', 'id')),
+                        ->options(function (callable $get) {
+                            $state = State::find($get('state_id'));
+                            if (!$state) {
+                                return City::all()->pluck('name', 'id');
+                            }
+                            return $state->cities->pluck('name', 'id');
+                        }),
                     Select::make('department_id')
                         ->required()
                         ->label('Department')
@@ -81,6 +95,7 @@ class EmployeeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
