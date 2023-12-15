@@ -40,6 +40,7 @@ class StateResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')->sortable(),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('country.name')->sortable(),
                 TextColumn::make('created_at'),
